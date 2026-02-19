@@ -1,41 +1,23 @@
-document.getElementById("send-money-btn").addEventListener("click", function() {
-    document.getElementById("send-money-section").classList.remove("hidden");
-    document.getElementById("add-money-section").classList.add("hidden");
-    document.getElementById("cashout-section").classList.add("hidden");
-    document.getElementById("get-bonus-section").classList.add("hidden");
-    document.getElementById("pay-bill-section").classList.add("hidden");
+const sendMoneyBtn = PayooUtils.byId("send-money-btn");
+const sendMoneyMainBtn = PayooUtils.byId("send-money-btn-main");
+
+sendMoneyBtn.addEventListener("click", () => {
+  PayooUtils.toggleSection("send-money-section");
 });
 
-document.getElementById("send-money-btn-main").addEventListener("click", function() {
-    if(document.getElementById('user-account-number').value === "") {
-        alert("Please enter a user account number.");
-        return;
-    }
-    else if(document.getElementById('user-account-number').value.length !== 11) {
-        alert("User account number must be 11 digits.");
-        return;
-    }
+sendMoneyMainBtn.addEventListener("click", () => {
+  const accountNo = PayooUtils.validateFixedDigits(
+    "user-account-number",
+    "User account number",
+    PayooUtils.ACCOUNT_NUMBER_LENGTH
+  );
+  if (accountNo === null) return;
 
-       if(document.getElementById("amount-to-send").value === "") {
-        alert("Please enter an amount to send.");
-        return;
-    }
-    else if(isNaN(document.getElementById("amount-to-send").value)) {
-        alert("Please enter a valid amount.");
-        return;
-    }
+  const amount = PayooUtils.validateAmount("amount-to-send", "send");
+  if (amount === null) return;
 
-         
- if(document.getElementById("pin-for-send-money").value.length !== 4) {
-        alert("Pin number must be 4 digits.");
-        return;
-    }
-    else if(document.getElementById("pin-for-send-money").value !== '1234') {
-        alert("Invalid pin number.");
-        return;
-    }
+  if (!PayooUtils.validatePin("pin-for-send-money")) return;
 
-       document.getElementById("current-balance").innerText = "$" + (parseFloat(document.getElementById("current-balance").innerText.replace("$", "")) - parseFloat(document.getElementById("amount-to-send").value));
-   
-    alert('Send Money successful!');
+  if (!PayooUtils.updateBalance(-amount)) return;
+  alert("Send Money successful!");
 });
